@@ -1,87 +1,108 @@
-# TIC-TAC-TOE
-import numpy
-array=[['_','_','_'],['_','_','_'],['_','_','_']]
-p1='o' ; p2='x'
+import random
+class TicTacToe:
 
-def row_chq(symbol):
-    for r in range(3):
-        count=0
-        for c in range(3):
-            if array[r][c]==symbol:
-                count+=1
-    if count==3:
-        return True
-    else:
-        return False
+    def __init__(self):
+        self.board = []
 
+    def create_board(self):
+        for i in range(3):
+            row = []
+            for j in range(3):
+                row.append('-')
+            self.board.append(row)
 
-def col_chq(symbol):
-    for c in range(3):
-        count=0
-        for r in range(3):
-            if array[r][c]==symbol:
-                count+=1
-    if count==3:
-        return True
-    else:
-        return False
+    def get_random_first_player(self):
+        return random.randint(0, 1)
 
+    def fix_spot(self, row, col, player):
+        self.board[row][col] = player
 
-def right_dig_chq(symbol):
-    for i in range(3):
-        count=0
-        if array[i][2-i]==symbol: #[n-i-1]
-            count+=1
-    if count==3:
-        return True
-    else:
-        return False
+    def is_player_win(self, player):
+        win = None
 
+        n = len(self.board)
 
-def left_dig_chq(symbol):
-    count=0
-    for i in range(3):
-            if array[i][i]==symbol:
-                count+=1
-    if count==3:
-        return True
-    else:
-        return False
+        # checking rows
+        for i in range(n):
+            win = True
+            for j in range(n):
+                if self.board[i][j] != player:
+                    win = False
+                    break
+            if win:
+                return win
 
+        # checking columns
+        for i in range(n):
+            win = True
+            for j in range(n):
+                if self.board[j][i] != player:
+                    win = False
+                    break
+            if win:
+                return win
 
-def won(symbol):
-    if row_chq(symbol) or col_chq(symbol) or right_dig_chq(symbol) or left_dig_chq(symbol):
-        return True
-    else:
-        return False
-
-def pos(symbol):
-    print(numpy.matrix(array))
-    while True:
-        r=int(input('please enter row - 1 or 2 or 3 : '))
-        c=int(input('please enter row - 1 or 2 or 3 : '))
-        if array[r-1][c-1]=='_' and c>0 and c<4 and r>0 and r<4 :
-            break
-        else:
-            print('your input is wrong')
-    array[r-1][c-1]=symbol
-
-
-def play():
-    for turn in range(9):
-        if turn%2==0:
-            print('it is your turn {}'.format(p1))
-            pos(p1)
-            if won(p1):
-                print('you won {}'.format(p1))
+        # checking diagonals
+        win = True
+        for i in range(n):
+            if self.board[i][i] != player:
+                win = False
                 break
-        else:
-            print('it is your turn {}'.format(p2))
-            pos(p2)
-            if won(p2):
-                print('you won {}'.format(p2))
+        if win:
+            return win
+
+        win = True
+        for i in range(n):
+            if self.board[i][n - 1 - i] != player:
+                win = False
                 break
-        if not won(p2) and not won(p1):
-            print('match draw')  
-if __name__=='__main__':
-    play()
+        if win:
+            return win
+        return False
+
+        for row in self.board:
+            for item in row:
+                if item == '-':
+                    return False
+        return True
+
+    def is_board_filled(self):
+        for row in self.board:
+            for item in row:
+                if item == '-':
+                    return False
+        return True
+
+    def swap_player_turn(self, player):
+        return 'X' if player == 'O' else 'O'
+
+    def show_board(self):
+        for row in self.board:
+            for item in row:
+                print(item, end=" ")
+            print()
+
+    def start(self):
+        self.create_board()
+
+        player = 'X' if self.get_random_first_player() == 1 else 'O'
+        while True:
+            print(f"Player {player} turn")
+
+            self.show_board()
+            row, col = list(
+                map(int, input("Enter row and column numbers to fix spot: ").split()))
+            print()
+            self.fix_spot(row - 1, col - 1, player)
+            if self.is_player_win(player):
+                print(f"Player {player} wins the game!")
+                break
+            if self.is_board_filled():
+                print("Match Draw!")
+                break
+            player = self.swap_player_turn(player)
+        print()
+        self.show_board()
+
+tic_tac_toe = TicTacToe()
+tic_tac_toe.start()
